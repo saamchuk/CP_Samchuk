@@ -55,7 +55,7 @@ class _UpdateProductPageState extends State<UpdateProductPage> {
               onPressed: () {
                 Navigator.push(
                   context, 
-                  MaterialPageRoute(builder: (context) => UpdateProduct(id: '', name: '', photo: '', price: 0))
+                  MaterialPageRoute(builder: (context) => UpdateProduct(id: path, name: '', photo: '', price: 0))
                 );
               }, 
               icon: const Icon(

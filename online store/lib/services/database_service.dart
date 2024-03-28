@@ -154,6 +154,18 @@ class ApiService {
     _firestore.collection('users').doc(MyApp.userId).update({'totalCost': MyApp.totalCost});
   }
 
+  void updateProduct(String id, String photo, String name, double price, String description) {
+    _firestore.doc(id).update({'name': name, 'price': price, 'photo': photo, 'description': description});
+  }
+
+  void addNewProduct(String id, String photo, String name, double price, String description) {
+    _firestore.collection(id).doc().set({'name': name, 'price': price, 'photo': photo, 'description': description});
+  }
+
+  void deleteElement(String path) {
+    _firestore.doc(path).delete();
+  }
+
   void updateUserInfo (String name, String phone) {
     _firestore.collection('users').doc(MyApp.userId).update({'name': name, 'phone': phone});
   }

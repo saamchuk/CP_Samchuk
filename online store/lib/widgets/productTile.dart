@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cursova/pages/login_page.dart';
 import 'package:cursova/main.dart';
+import 'package:cursova/services/database_service.dart';
+import 'package:cursova/widgets/updateProduct.dart';
 import 'package:flutter/material.dart';
 
 class ProductTile extends StatelessWidget {
@@ -203,12 +205,19 @@ class ProductTile extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       ElevatedButton(
-                    onPressed: () {}, 
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => UpdateProduct(id: id, name: name, photo: imageUrl, price: price))
+                      );
+                    }, 
                     child: const Icon(Icons.edit)
                   ),
                   const SizedBox(width: 10),
                   ElevatedButton(
-                    onPressed: () {}, 
+                    onPressed: () {
+                      ApiService().deleteElement(id);
+                    }, 
                     child: const Icon(Icons.delete)
                   )
                     ],

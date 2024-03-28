@@ -136,7 +136,7 @@ Future<List<DocumentSnapshot>> _getProducts(List<QueryDocumentSnapshot> productP
   List<DocumentSnapshot> products = [];
   for (QueryDocumentSnapshot productPath in productPaths) {
     DocumentSnapshot product = await FirebaseFirestore.instance.doc(productPath['path']).get();
-    products.add(product);
+    if (product.exists) products.add(product);
   }
   return products;
 }
