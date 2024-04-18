@@ -4,13 +4,20 @@ import 'registration_page.dart';
 import '../widgets/customAppBar.dart';
 import '../widgets/drawerMenu.dart';
 
+/// the [LoginPage] page is a page for user login
+/// 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
-
+  
   @override
-  _LoginPageState createState() => _LoginPageState();
+  State<StatefulWidget> createState() => _LoginPageState();
 }
 
+/// the state of the login page
+/// 
+/// the [emailController] is a controller for handling user email input
+/// the [passwordController] is a controller for handling user password input
+/// 
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -32,25 +39,29 @@ class _LoginPageState extends State<LoginPage> {
                   const Text(
                     'Вхід користувача',
                     style: TextStyle(
-                      fontSize: 25,
+                      fontSize: 30,
                       fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 8), // Додатковий відступ між текстовими полями
-                  // ввід імейла користувача
+                  const SizedBox(height: 8),
                   SizedBox(
                     width: MediaQuery.of(context).size.width / 2,
                     child: TextField(
+                      style: const TextStyle(
+                        fontSize: 20
+                      ),
                       controller: emailController,
                       decoration: const InputDecoration(labelText: 'Email'),
                     ),
                   ),
-                  const SizedBox(height: 8), // Додатковий відступ між текстовими полями
-                  // ввід пароля користувача
+                  const SizedBox(height: 8), 
                   SizedBox(
                     width: MediaQuery.of(context).size.width / 2,
                     child: TextField(
+                      style: const TextStyle(
+                        fontSize: 20
+                      ),
                       controller: passwordController,
                       decoration: const InputDecoration(labelText: 'Пароль'),
                       obscureText: true,
@@ -71,7 +82,6 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 10),
                   TextButton(
                     onPressed: () {
-                      // Navigate to registration page
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => const RegistrationPage()),
@@ -81,6 +91,7 @@ class _LoginPageState extends State<LoginPage> {
                       'Зареєструватися',
                       style: TextStyle(
                         fontStyle: FontStyle.italic,
+                        fontSize: 20
                       )
                     ),
                   ),

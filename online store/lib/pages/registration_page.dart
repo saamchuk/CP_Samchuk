@@ -1,18 +1,30 @@
+import 'package:cursova/main.dart';
 import 'package:cursova/widgets/customAppBar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:cursova/services/database_service.dart';
 
+/// the registration page of the application
+/// 
+/// the [RegistrationPage] page allows the user to create a new account
+/// 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
-
+  
   @override
-  _RegistrationPageState createState() => _RegistrationPageState();
+  State<StatefulWidget> createState() => _RegistrationPageState();
 }
 
+/// the state of the registration page
+/// 
+/// the [emailController] is a controller for handling user email input
+/// the [passwordController] is a controller for handling user password input
+/// the [nameController] is a controller for handling user name input
+/// the [phoneNumberController] is a controller for handling user phone number input
+/// 
 class _RegistrationPageState extends State<RegistrationPage> {
-  // Дані користувача
+
   final TextEditingController emailController = TextEditingController(); 
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
@@ -35,44 +47,52 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   const Text(
                     'Реєстрація користувача',
                     style: TextStyle(
-                      fontSize: 25,
+                      fontSize: 30,
                       fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 20),
-                  // поле для вводу імейла користувача
                   SizedBox(
                     width: MediaQuery.of(context).size.width / 2,
                     child: TextField(
+                      style: const TextStyle(
+                        fontSize: 20
+                      ),
                       controller: emailController,
                       decoration: const InputDecoration(labelText: 'Email'),
                     ),
                   ),
-                  const SizedBox(height: 8), // Додатковий відступ між текстовими полями
-                  // поле для вводу пароля користувача
+                  const SizedBox(height: 8),
                   SizedBox(
                     width: MediaQuery.of(context).size.width / 2,
                     child: TextField(
+                      style: const TextStyle(
+                        fontSize: 20
+                      ),
                       controller: passwordController,
                       decoration: const InputDecoration(labelText: 'Пароль'),
                       obscureText: true,
                     ),
                   ),
-                  const SizedBox(height: 8), // Додатковий відступ між текстовими полями
-                  // поле для вводу імені користувача
+                  const SizedBox(height: 8),
                   SizedBox(
                     width: MediaQuery.of(context).size.width / 2,
                     child: TextField(
+                      style: const TextStyle(
+                        fontSize: 20
+                      ),
                       controller: nameController,
                       decoration: const InputDecoration(labelText: 'Ім\'я користувача'),
                     ),
                   ),
-                  const SizedBox(height: 8), // Додатковий відступ між текстовими полями
-                  // поле для вводу номеру телефону користувача
+                  const SizedBox(height: 8),
                   SizedBox(
                     width: MediaQuery.of(context).size.width / 2,
                     child: TextField(
+                      style: const TextStyle(
+                        fontSize: 20
+                      ),
                       controller: phoneNumberController,
                       decoration: const InputDecoration(labelText: 'Номер телефону'),
                       inputFormatters: [
@@ -80,7 +100,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 25), // Додатковий відступ між текстовими полями
+                  const SizedBox(height: 25),
                   ElevatedButton(
                     onPressed: () {
                       if (nameController.text.isEmpty) {
@@ -95,6 +115,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       }
                       else {
                         ApiService().register(emailController.text, passwordController.text, nameController.text, phoneNumberController.text, context);
+                        setState(() {
+                          MyApp.access = MyApp.access;
+                          MyApp.userId = MyApp.userId;
+                        });
                       }
                     },
                     child: const Text(

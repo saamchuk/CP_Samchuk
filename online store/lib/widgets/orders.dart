@@ -4,6 +4,12 @@ import 'package:cursova/pages/details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+/// the [Orders] widget displays order information
+/// 
+/// the [data] is a data for the order
+/// the [id] is an ID of the order
+/// the [userId] is an ID of the user who placed the order
+/// 
 class Orders extends StatelessWidget{
   final Map<String, dynamic> data;
   final String id;
@@ -30,7 +36,7 @@ class Orders extends StatelessWidget{
                   child: Text(
                     'Статус: виконано', 
                     style: TextStyle(
-                      color: Colors.blue
+                      color: Colors.blue,
                     ),
                   )
                 )
@@ -39,7 +45,7 @@ class Orders extends StatelessWidget{
                   child: Text(
                     'Статус: в процесі...', 
                     style: TextStyle(
-                      color: Colors.blue
+                      color: Colors.blue,
                     ),
                   ),
                 )

@@ -4,6 +4,14 @@ import 'package:cursova/widgets/customAppBar.dart';
 import 'package:cursova/widgets/drawerMenu.dart';
 import 'package:flutter/material.dart';
 
+/// the category update page of the application
+/// 
+/// the [UpdateCategoryPage] page allows the admin user to update categories
+/// 
+/// the [title] is a title of the page
+/// the [path] is a path to the collection in the Firestore database
+/// the [categoryLocal] indicates whether it's a category or not (a subcategory)
+/// 
 class UpdateCategoryPage extends StatelessWidget {
   final String title;
   final String path;
@@ -30,7 +38,7 @@ class UpdateCategoryPage extends StatelessWidget {
               child: Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 25,
+                  fontSize: 30,
                   fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
@@ -49,7 +57,7 @@ class UpdateCategoryPage extends StatelessWidget {
                       title: const Text(
                         "Нова категорія",
                         style: TextStyle(
-                          fontSize: 25
+                          fontSize: 30
                         ),
                         textAlign: TextAlign.center
                       ),
@@ -80,6 +88,9 @@ class UpdateCategoryPage extends StatelessWidget {
                           },
                           child: const Text(
                             "Створити категорію",
+                            style: TextStyle(
+                              fontSize: 20
+                            ),
                           ),
                         ),
                       ],

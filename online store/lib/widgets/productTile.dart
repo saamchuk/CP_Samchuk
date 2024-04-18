@@ -2,14 +2,25 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cursova/pages/login_page.dart';
 import 'package:cursova/main.dart';
 import 'package:cursova/services/database_service.dart';
-import 'package:cursova/widgets/updateProduct.dart';
+import 'package:cursova/pages/updateProduct.dart';
 import 'package:flutter/material.dart';
 
+/// the [ProductTile] widget represents a product tile
+/// 
+/// the [id] is a path of the item
+/// the [name] is a name of the item
+/// the [price] is a price of the item
+/// the [imageUrl] is a path to the photo of the item
+/// the [description] is a description of the item
+/// the [button] indicates whether to display button on the tile
+/// the [update] indicates whether to update the product
+/// 
 class ProductTile extends StatelessWidget {
   final String id;
   final String name;
   final double price;
   final String imageUrl;
+  final String description;
   final bool button;
   final bool update;
 
@@ -20,7 +31,8 @@ class ProductTile extends StatelessWidget {
     required this.imageUrl,
     super.key, 
     required this.button, 
-    required this.update,
+    required this.update, 
+    required this.description,
   });
 
   @override
@@ -37,20 +49,18 @@ class ProductTile extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                  // Ліва половина - фото товару
+                    // left half - item photo
                     Expanded(
                       flex: 1,
                       child: Container(
-                        //height: MediaQuery.of(context).size.height / 10 , // висота фото
                         alignment: Alignment.center,
                         child: Image.network(
                           imageUrl,
-                          //height: MediaQuery.of(context).size.height / 2,
-                          fit: BoxFit.cover, // зміст фото
+                          fit: BoxFit.cover, 
                         ),
                       ),
                     ),
-                  // Права половина - інформація про товар
+                    // right half - item information
                     Expanded(
                       flex: 1,
                       child: Padding(
@@ -58,67 +68,85 @@ class ProductTile extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                          // Назва товару
                             Text(
                               name,
                               style: const TextStyle(
-                                fontSize: 35,
-                                fontWeight: FontWeight.bold,
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold
                               ),
                             ),
                             const SizedBox(height: 8),
-                            // Ціна товару
-                            Text(
-                              'Ціна: $price грн',
-                              style: const TextStyle(
-                                color: Colors.red,
+                            Row(
+                            children: [ 
+                              const Text(
+                                'Ціна: ',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                ' $price грн',
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ]),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Опис товару:',
+                              style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             const SizedBox(height: 8),
-                            // Опис товару
-                            const Text(
-                              'Опис товару:',
-                              style: TextStyle(
-                                fontSize: 15,
+                            Text(
+                              description,
+                              style: const TextStyle(
+                                fontSize: 20,
                               ),
                             ),
                             const SizedBox(height: 8),
-                            // Кнопка "Купити"
                             if (button)
-                            ElevatedButton(
-                              onPressed: () async {
-                                if (MyApp.userId != '') {
-                                  await FirebaseFirestore.instance.collection('users/${MyApp.userId}/shoppingCart').doc().set({
-                                    'path': id,
-                                    'name': name,
-                                    'photo': imageUrl,
-                                    'price': price,
-                                  });
-                                  // Отримання посилання на колекцію користувачів
-                                  CollectionReference users = FirebaseFirestore.instance.collection('users');
+                            Expanded(
+                              child: Align(
+                                alignment: Alignment.bottomLeft,
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    if (MyApp.userId != '') {
+                                      await FirebaseFirestore.instance.collection('users/${MyApp.userId}/shoppingCart').doc().set({
+                                        'path': id,
+                                        'name': name,
+                                        'photo': imageUrl,
+                                        'price': price,
+                                        'description': description
+                                      });
+                                      // get the reference to the users collection
+                                      CollectionReference users = FirebaseFirestore.instance.collection('users');
 
-                                  // Отримання поточного значення totalCost
-                                  DocumentSnapshot userDoc = await users.doc(MyApp.userId).get();
-                                  double currentTotalCost = userDoc['totalCost'];
+                                      // get the current value of total cost
+                                      DocumentSnapshot userDoc = await users.doc(MyApp.userId).get();
+                                      double currentTotalCost = userDoc['totalCost'];
 
-                                  // Збільшення totalCost на 1
-                                  MyApp.totalCost = currentTotalCost + price;
+                                      /// increase [totalCost] by the price of the item
+                                      double totalCost = currentTotalCost + price;
 
-                                  // Оновлення totalCost у базі даних
-                                  await users.doc(MyApp.userId).update({'totalCost': MyApp.totalCost});
-                                  
-                                  Navigator.of(context).pop();
+                                      // update total cost in the database
+                                      await users.doc(MyApp.userId).update({'totalCost': totalCost});
 
-                                } else {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => const LoginPage()),
-                                  );
-                                }
-                              },
-                              child: const Text('Додати в кошик'),
+                                      Navigator.of(context).pop();
+
+                                    } else {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => const LoginPage()),
+                                      );
+                                    }
+                                  },
+                                  child: const Text('Додати в кошик'),
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -134,13 +162,14 @@ class ProductTile extends StatelessWidget {
       child: Card(
         elevation: 2,
         margin: const EdgeInsets.all(10),
+        child: Container(
+          width: 200,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image.network(
               imageUrl,
               height: MediaQuery.of(context).size.height / 4,
-              //fit: BoxFit.cover,
             ),
             Padding(
               padding: const EdgeInsets.all(5),
@@ -151,17 +180,16 @@ class ProductTile extends StatelessWidget {
                   Text(
                     name,
                     style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 20,
                     ),
                     softWrap: true,
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
-                    'Ціна: $price грн',
+                    '$price грн',
                     style: const TextStyle(
                       color: Colors.red,
-                      fontSize: 14,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -175,20 +203,21 @@ class ProductTile extends StatelessWidget {
                           'name': name,
                           'photo': imageUrl,
                           'price': price,
+                          'description': description
                         });
 
-                        // Отримання посилання на колекцію користувачів
+                        // get the reference to the users collection
                         CollectionReference users = FirebaseFirestore.instance.collection('users');
 
-                        // Отримання поточного значення totalCost
+                        // get the current value of total cost
                         DocumentSnapshot userDoc = await users.doc(MyApp.userId).get();
                         double currentTotalCost = userDoc['totalCost'];
 
-                        // Збільшення totalCost на 1
-                        MyApp.totalCost = currentTotalCost + price;
+                        /// increase [totalCost] by the price of the item
+                        double totalCost = currentTotalCost + price;
 
-                        // Оновлення totalCost у базі даних
-                        await users.doc(MyApp.userId).update({'totalCost': MyApp.totalCost});
+                        // update total cost in the database
+                        await users.doc(MyApp.userId).update({'totalCost': totalCost});
 
                       } else {
                         Navigator.pushReplacement(
@@ -208,7 +237,7 @@ class ProductTile extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => UpdateProduct(id: id, name: name, photo: imageUrl, price: price))
+                        MaterialPageRoute(builder: (context) => UpdateProduct(id: id, name: name, photo: imageUrl, price: price, description: description,))
                       );
                     }, 
                     child: const Icon(Icons.edit)
@@ -227,6 +256,7 @@ class ProductTile extends StatelessWidget {
             ),
           ],
         ),
+        )
       ),
     );
   }

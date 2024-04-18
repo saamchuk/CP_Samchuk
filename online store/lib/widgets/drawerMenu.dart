@@ -1,12 +1,16 @@
 import 'package:cursova/pages/account_page.dart';
 import 'package:cursova/pages/cart_page.dart';
 import 'package:cursova/main.dart';
+import 'package:cursova/pages/combination_main_page.dart';
+import 'package:cursova/pages/home_page.dart';
+import 'package:cursova/pages/login_page.dart';
 import 'package:cursova/pages/order_page.dart';
-import 'package:cursova/page2.dart';
 import 'package:cursova/pages/categories_page.dart';
 import 'package:cursova/pages/update_category_page.dart';
 import 'package:flutter/material.dart';
 
+/// the [DrawerMenu] widget is used for navigation
+/// 
 class DrawerMenu extends StatelessWidget {
   const DrawerMenu({super.key});
 
@@ -26,7 +30,7 @@ class DrawerMenu extends StatelessWidget {
                 'Меню',
                 textAlign: TextAlign.left,
                 style: TextStyle(
-                  fontSize: 28,
+                  fontSize: 30,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -47,7 +51,7 @@ class DrawerMenu extends StatelessWidget {
               );
             },
           ),
-          if (!MyApp.access && MyApp.userId != '')
+          if (MyApp.userId.isNotEmpty)
             ListTile(
               title: const Text(
                 'Кошик',
@@ -59,11 +63,11 @@ class DrawerMenu extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => CartPage()),
+                  MaterialPageRoute(builder: (context) => const CartPage()),
                 );
               },
             ),
-          if (MyApp.userId != '')
+          if (MyApp.userId.isNotEmpty)
           ListTile(
             title: const Text(
               'Замовлення',
@@ -75,11 +79,12 @@ class DrawerMenu extends StatelessWidget {
             onTap: () {
               Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => OrdersPage()),
+                  MaterialPageRoute(builder: (context) => const OrdersPage()),
                 );
               // Додайте код для відкриття сторінки "Мої замовлення"
             },
           ),
+          if (MyApp.userId.isNotEmpty)
           ListTile(
             title: const Text(
               'Поєднання',
@@ -91,12 +96,12 @@ class DrawerMenu extends StatelessWidget {
             onTap: () {
               Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => page()),
+                  MaterialPageRoute(builder: (context) => const CombinationMainPage()),
                 );
               // Додайте код для відкриття сторінки "Мої замовлення"
             },
           ),
-          //if (MyApp.access && MyApp.userId.isNotEmpty)
+          if (MyApp.access && MyApp.userId.isNotEmpty)
           ListTile(
             title: const Text(
               'Внести зміни',
@@ -113,6 +118,7 @@ class DrawerMenu extends StatelessWidget {
               // Додайте код для відкриття сторінки "Мої замовлення"
             },
           ),
+          if (MyApp.userId.isNotEmpty)
           ListTile(
             title: const Text(
               'Акаунт',
@@ -128,7 +134,23 @@ class DrawerMenu extends StatelessWidget {
               );
             },
           ),
-          if (MyApp.userId != '')
+          if (MyApp.userId.isEmpty)
+          ListTile(
+            title: const Text(
+              'Вхід',
+              style: TextStyle(
+                  fontSize: 20,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginPage()),
+              );
+            },
+          ),
+          if (MyApp.userId.isNotEmpty)
           ListTile(
             title: const Text(
               'Вихід',

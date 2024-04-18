@@ -1,10 +1,18 @@
 import 'package:cursova/widgets/customAppBar.dart';
 import 'package:cursova/widgets/drawerMenu.dart';
+import 'package:cursova/widgets/topList.dart';
 import 'package:flutter/material.dart';
 
-class HomePage extends StatelessWidget {
+/// the home page of the application
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+  
+  @override
+  State<StatefulWidget> createState() => _HomePageState();
+}
 
+/// the state of the home page 
+class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
@@ -18,13 +26,13 @@ class HomePage extends StatelessWidget {
             Text(
               'Топові товари',
               style: TextStyle(
-                fontSize: 25,
+                fontSize: 30,
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 20,),
-            //TopList(width: 10),
+            TopList(width: 10),
           ],
         ),
       ),

@@ -1,8 +1,14 @@
 import 'package:cursova/pages/cart_page.dart';
+import 'package:cursova/pages/home_page.dart';
 import 'package:cursova/pages/login_page.dart';
 import 'package:cursova/main.dart';
 import 'package:flutter/material.dart';
 
+/// the [CustomAppBar] widget used throughout the application
+/// 
+/// if [MyApp.userId] is empty, the shopping cart icon is hidden
+/// if [MyApp.userId] is empty, show account circle icon; otherwise, show logout icon
+/// 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   const CustomAppBar({super.key});
@@ -13,12 +19,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Colors.blue.shade200,
       title: GestureDetector(
         onTap: () {
-          Navigator.pushReplacement(
+          Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const HomePage()),
           );
         },
-        child: const Text('SAAMCHUK'),
+        child: const Text('ONLINE STORE'),
       ), 
       toolbarHeight: 70,
       leading:
@@ -48,7 +54,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             if (MyApp.userId != '') {
               MyApp.userId = '';
               MyApp.access = false;
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const HomePage()),
               );

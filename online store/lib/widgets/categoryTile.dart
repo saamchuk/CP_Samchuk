@@ -3,6 +3,12 @@ import 'package:cursova/pages/update_category_page.dart';
 import 'package:cursova/pages/update_product_page.dart';
 import 'package:flutter/material.dart';
 
+/// the [CategoryTile] widget represents category
+/// 
+/// the [data] is a data of the category 
+/// the [id] is a unique identifier of the category
+/// the [category] indicates whether it's a category or not (a subcategory)
+/// 
 class CategoryTile extends StatelessWidget{
   final Map<String, dynamic> data;
   final String id;
@@ -45,7 +51,7 @@ class CategoryTile extends StatelessWidget{
                           title: const Text(
                             "Редагування категорії",
                             style: TextStyle(
-                              fontSize: 25
+                              fontSize: 30
                             ),
                             textAlign: TextAlign.center
                           ),
@@ -75,6 +81,9 @@ class CategoryTile extends StatelessWidget{
                               },
                               child: const Text(
                                 "Зберегти зміни",
+                                style: TextStyle(
+                                  fontSize: 20
+                                ),
                               ),
                             ),
                           ],

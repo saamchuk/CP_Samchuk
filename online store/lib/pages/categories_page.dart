@@ -1,26 +1,47 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cursova/widgets/customAppBar.dart';
 import 'package:cursova/widgets/drawerMenu.dart';
-import 'package:cursova/widgets/products.dart';
+import 'package:cursova/widgets/listProduct.dart';
 import 'package:flutter/material.dart';
 
+/// the product catalog page of the application
+/// 
+/// the [SubCategoriesPage] page displays subcategories or products based on the specified path
+/// 
 class SubCategoriesPage extends StatefulWidget {
   const SubCategoriesPage({super.key});
-
+  
   @override
-  _SubCategoriesPageState createState() => _SubCategoriesPageState();
+  State<StatefulWidget> createState() => _SubCategoriesPageState();
+
 }
 
+/// the state of the product catalog page
+/// 
+/// the [path] is a path to the collection or current category or subcategory
+/// the [category] is a path to the collection or current category
+/// the [all] variable indicates if it's categories
+/// the [subcategories] variable indicates if it's subcategories
+/// the [nameCategory] is a title for the category list
+/// the [nameProducts] is a title for the products
+/// 
 class _SubCategoriesPageState extends State<SubCategoriesPage> {
-  String path = 'categories'; //шлях до колекції чи поточної категорії чи підкатегорії
-  String category = 'categories'; // шлях до колекції чи поточної категорії
-  bool all = true; // чи це категорії
-  bool subcategories = true; // чи це підкатегорії
-  String nameCategory = "Категорії"; // заголовок для списку категорій
+  String path = 'categories'; 
+  String category = 'categories'; 
+  bool all = true; 
+  bool subcategories = true; 
+  String nameCategory = "Категорії"; 
   String nameProducts = "Товари";
   
   _SubCategoriesPageState();
 
+  /// updates the path
+  /// 
+  /// the [_updatePath] function retrieves a [newPath] 
+  /// 
+  /// the [newPath] is a path to the collection or current category or subcategory
+  /// 
+  /// if [all] is true, it sets [all] to false; otherwise, it sets [subcategories] to false
+  /// 
   void _updatePath(String newPath) {
     setState(() {
       path = newPath;
@@ -33,6 +54,14 @@ class _SubCategoriesPageState extends State<SubCategoriesPage> {
     });
   }
 
+  /// updates the name
+  /// 
+  /// the [_updateName] function retrieves a [newName]
+  /// 
+  /// the [newName] is a title
+  /// 
+  /// if [subcategories] is true, it updates [nameCategory]; otherwise, it updates [nameProducts]
+  /// 
   void _updateName(String newName) {
     setState(() {
       if (subcategories) {
@@ -44,6 +73,12 @@ class _SubCategoriesPageState extends State<SubCategoriesPage> {
     });
   }
 
+  /// updates the category
+  /// 
+  /// the [_updateCategory] function retrieves a [newCategory] and updates [category]
+  /// 
+  /// the [newCategory] is a a path to the collection
+  /// 
   void _updateCategory(String newCategory) {
     setState(() {
       category = newCategory;
@@ -63,118 +98,6 @@ class _SubCategoriesPageState extends State<SubCategoriesPage> {
         )
       ),
       drawer: const DrawerMenu(),
-    );
-  }
-}
-
-class ListProduct extends StatelessWidget {
-  final String path;
-  final String category;
-  final bool subcategories;
-  final bool all;
-  final String nameCategory;
-  final String nameProducts;
-  final Function(String) onUpdatePath;
-  final Function(String) onUpdateName;
-  final Function(String) onUpdateCategory;
-
-  const ListProduct({super.key, required this.path, required this.subcategories, required this.onUpdatePath, required this.category, required this.all, required this.onUpdateName, required this.nameCategory, required this.onUpdateCategory, required this.nameProducts});
-  
-  @override
-  Widget build(BuildContext context) {
-
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection(category).snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        }
-
-        final categories = snapshot.data?.docs ?? [];
-
-        return SingleChildScrollView(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Flexible(
-                flex: 2,
-                child: Column(
-                  children: [
-                    const SizedBox(height: 20),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => const SubCategoriesPage()),
-                        );
-                      },
-                      child: Text(
-                        nameCategory,
-                        style: const TextStyle(
-                          fontSize: 25,
-                          fontStyle: FontStyle.italic
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ), 
-                    const SizedBox(height: 20),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: categories.length,
-                      itemBuilder: (context, index) {
-                        final category = categories[index];
-                        final categoryData = category.data() as Map<String, dynamic>;
-
-                        return ListTile(
-                          title: Text(
-                            categoryData['name'],
-                            style: const TextStyle(
-                              fontSize: 20
-                            )
-                          ),
-                          onTap: () async {
-                            if (all) {
-                              onUpdatePath("${category.reference.path}/subcategories");
-                              onUpdateCategory("${category.reference.path}/subcategories");
-                              onUpdateName(categoryData['name']);
-                            } 
-                            else {
-                              onUpdatePath("${category.reference.path}/products");
-                              onUpdateName(categoryData['name']);
-                            }
-                          },
-                        );
-                      },
-                    ),
-                  ]
-                )
-              ),
-              const SizedBox(width: 20),
-              Flexible(
-                flex: 7,
-                child: Column(
-                  children: [ 
-                    const SizedBox(height: 20),
-                    Text(
-                      nameProducts,
-                      style: const TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold
-                      )
-                    ),
-                    const SizedBox(height: 20),
-                    Products(width: 20, path: path, subcategories: subcategories, all: all),
-                    
-                  ]
-                )
-              )
-            ],
-          ),
-        );
-      },
     );
   }
 }

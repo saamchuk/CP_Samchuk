@@ -2,6 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cursova/widgets/productTile.dart';
 import 'package:flutter/material.dart';
 
+/// the [OrderElements] widget displays order elements
+/// 
+/// the [path] is a path to the collection of order elements
+/// the [button] indicates whether buttons should be displayed
+/// the [width] is a width of the widget
+///  
 class OrderElements extends StatelessWidget{
   final String path;
   final bool button;
@@ -35,8 +41,9 @@ class OrderElements extends StatelessWidget{
                   update: false,
                   id: allProducts[index].reference.path,
                   name: allProducts[index].get('name'),
-                  price: allProducts[index].get('price'),
+                  price: allProducts[index].get('price').toDouble(),
                   imageUrl: allProducts[index].get('photo'),
+                  description: allProducts[index].get('description'),
                 ),
               ).toList(),
             )

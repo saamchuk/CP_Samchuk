@@ -1,21 +1,34 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cursova/pages/home_page.dart';
 import 'package:cursova/services/database_service.dart';
-import 'package:cursova/widgets/cartTile.dart';
 import 'package:cursova/widgets/customAppBar.dart';
 import 'package:cursova/widgets/drawerMenu.dart';
 import 'package:cursova/main.dart';
+import 'package:cursova/widgets/listElements.dart';
 import 'package:flutter/material.dart';
 
-
+/// the shopping cart page of the application
+/// 
+/// the [CartPage] page displays the shopping cart of the current user, 
+/// which includes the list of products added to the cart, the total cost,
+/// and allows the user to confirm the order by providing the delivery address
+/// 
+/// the [products] is a list of products added to the cart of the current user
+/// 
 class CartPage extends StatefulWidget {
+
   static List<Map<String, dynamic>> products = [];
   const CartPage({super.key});
   
   @override
-  _CartPageState createState() => _CartPageState();
+  State<StatefulWidget> createState() => _CartPageState();
 
 }
 
+/// the state of the shopping cart page
+/// 
+/// the [addressController] is a controller for handling the user's input for the delivery address
+/// 
 class _CartPageState extends State<CartPage> {
 
   final TextEditingController addressController = TextEditingController();
@@ -33,7 +46,7 @@ class _CartPageState extends State<CartPage> {
             const Text(
               'Кошик',
               style: TextStyle(
-                fontSize: 25,
+                fontSize: 30,
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
@@ -41,7 +54,7 @@ class _CartPageState extends State<CartPage> {
             const SizedBox(height: 20),
             SizedBox(
               width: MediaQuery.of(context).size.width / 1.8,
-              child: ListElements(path: 'users/${MyApp.userId}/shoppingCart'),
+              child: const ListElements(),
             ),
             
             const SizedBox(height: 20),
@@ -51,7 +64,7 @@ class _CartPageState extends State<CartPage> {
                 const Text(
                   'Загальна сума: ',
                   style: TextStyle(
-                    fontSize: 25,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                     fontStyle: FontStyle.italic
                   ),
@@ -61,24 +74,21 @@ class _CartPageState extends State<CartPage> {
                   stream: FirebaseFirestore.instance.doc('users/${MyApp.userId}').snapshots(),
                   builder: (context, snapshot) {
 
-                    MyApp.totalCost = 0;
-
                     if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     }
 
                     if (!snapshot.hasData || snapshot.data == null) {
-                      // Якщо немає даних або вони нульові, відобразіть заглушку або недоступність
                       return const SizedBox(height: 5);
                     }
 
                     final user = snapshot.data!.data() as Map<String, dynamic>;
-                    MyApp.totalCost = user['totalCost'];
+                    double totalCost = user['totalCost'];
 
                     return Text(
-                      '${MyApp.totalCost} грн',
+                      '$totalCost грн',
                       style: const TextStyle(
-                        fontSize: 25,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Colors.red
                       )
@@ -92,21 +102,18 @@ class _CartPageState extends State<CartPage> {
               stream: FirebaseFirestore.instance.doc('users/${MyApp.userId}').snapshots(),
               builder: (context, snapshot) {
 
-                MyApp.totalCost = 0;
-
                 if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 }
 
                 if (!snapshot.hasData || snapshot.data == null) {
-                  // Якщо немає даних або вони нульові, відобразіть заглушку або недоступність
                   return const SizedBox(height: 5);
                 }
 
                 final user = snapshot.data!.data() as Map<String, dynamic>;
-                MyApp.totalCost = user['totalCost'];
+                double totalCost = user['totalCost'];
 
-                if (MyApp.totalCost == 0) {
+                if (totalCost == 0) {
                   return const Text(
                     '(Ваш кошик порожній!)',
                     style: TextStyle(
@@ -123,11 +130,14 @@ class _CartPageState extends State<CartPage> {
                     SizedBox(
                       width: MediaQuery.of(context).size.width / 2,
                       child: TextField(
+                        style: const TextStyle(
+                          fontSize: 20
+                        ),
                         controller: addressController,
                         decoration: const InputDecoration(labelText: 'Адреса доставки'),
                       ),
                     ),
-                    const SizedBox(height: 25), // Додатковий відступ між текстовими полями
+                    const SizedBox(height: 25),
                     ElevatedButton(
                       onPressed: () async {
                         if (addressController.text != '') {
@@ -147,6 +157,7 @@ class _CartPageState extends State<CartPage> {
                         )
                       ),
                     ),
+                    const SizedBox(height: 20)
                   ]
                 );
               }
@@ -155,65 +166,6 @@ class _CartPageState extends State<CartPage> {
         ),
       ),
       drawer: const DrawerMenu(),
-    );
-  }
-  
-}
-
-class ListElements extends StatelessWidget{
-  final String path;
-
-  const ListElements({super.key, required this.path});
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('users/${MyApp.userId}/shoppingCart').snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        }
-        final allProducts = snapshot.data?.docs ?? [];
-
-        MyApp.totalCost = 0;
-
-        CartPage.products = [];
-
-        if (allProducts != []) {
-          for (var product in allProducts) {
-            var productData = product.data() as Map<String, dynamic>;
-            MyApp.totalCost += productData['price'];
-
-            CartPage.products.add({
-              'path': productData['path'],
-              'name': productData['name'],
-              'price': productData['price'],
-              'photo': productData['photo']
-            });
-          }
-        }
-
-        ApiService().updateTotalCost();
-
-        return ListView.builder(
-          shrinkWrap: true,
-          itemCount: allProducts.length,
-          itemBuilder: (context, index) {
-            final product = allProducts[index];
-            final productData = product.data() as Map<String, dynamic>;
-
-            return CartTile(
-              path: product.reference.path,
-              name: productData['name'],
-              price: productData['price'],
-              photo: productData['photo'],
-            );
-          }
-        );
-      },
     );
   }
 }

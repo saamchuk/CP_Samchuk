@@ -3,18 +3,28 @@ import 'package:cursova/pages/login_page.dart';
 import 'package:cursova/main.dart';
 import 'package:flutter/material.dart';
 
+/// the [CartTile] widget displays a single item in the cart
+/// 
+/// the [path] is a path of the item
+/// the [name] is a name of the item
+/// the [price] is a price of the item
+/// the [photo] is a path to the photo of the item
+/// the [description] is a description of the item
+/// 
 class CartTile extends StatelessWidget {
   final String path;
   final String name;
   final double price;
   final String photo;
+  final String description;
 
   const CartTile({
     required this.name,
     required this.price,
     super.key, 
     required this.path, 
-    required this.photo
+    required this.photo, 
+    required this.description
   });
 
   @override
@@ -32,20 +42,18 @@ class CartTile extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                  // Ліва половина - фото товару
+                    // left half - item photo
                     Expanded(
                       flex: 1,
                       child: Container(
-                        //height: MediaQuery.of(context).size.width, // висота фото
                         alignment: Alignment.center,
                         child: Image.network(
                           photo,
-                          height: MediaQuery.of(context).size.height / 2,
-                          fit: BoxFit.cover, // зміст фото
+                          fit: BoxFit.cover,
                         ),
                       ),
                     ),
-                  // Права половина - інформація про товар
+                    // right half - item information
                     Expanded(
                       flex: 1,
                       child: Padding(
@@ -53,54 +61,85 @@ class CartTile extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                          // Назва товару
                             Text(
                               name,
                               style: const TextStyle(
-                                fontSize: 35,
-                                fontWeight: FontWeight.bold,
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold
                               ),
                             ),
                             const SizedBox(height: 8),
-                            // Ціна товару
-                            Text(
-                              'Ціна: $price грн',
-                              style: const TextStyle(
-                                color: Colors.red,
+                            Row(
+                            children: [ 
+                              const Text(
+                                'Ціна: ',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                ' $price грн',
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ]),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Опис товару:',
+                              style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             const SizedBox(height: 8),
-                            // Опис товару
-                            const Text(
-                              'Опис товару:',
-                              style: TextStyle(
-                                fontSize: 15,
+                            Text(
+                              description,
+                              style: const TextStyle(
+                                fontSize: 20,
                               ),
                             ),
                             const SizedBox(height: 8),
-                            // Кнопка "Купити"
-                            ElevatedButton(
-                              onPressed: () async {
-                                if (MyApp.userId != '') {
-                                  await FirebaseFirestore.instance.collection('users/${MyApp.userId}/shoppingCart').doc().set({
-                                    'path': path,
-                                    'name': name,
-                                    'photo': photo,
-                                    'price': price,
-                                  });
+                            Expanded(
+                              child: Align(
+                                alignment: Alignment.bottomLeft,
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    if (MyApp.userId != '') {
+                                      await FirebaseFirestore.instance.collection('users/${MyApp.userId}/shoppingCart').doc().set({
+                                        'path': path,
+                                        'name': name,
+                                        'photo': photo,
+                                        'price': price,
+                                        'description': description
+                                      });
 
-                                  Navigator.of(context).pop();
-                                  
-                                } else {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => const LoginPage()),
-                                  );
-                                }
-                              },
-                              child: const Text('Додати в кошик'),
+                                      // get the reference to the users collection
+                                      CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+                                      // get the current value of total cost
+                                      DocumentSnapshot userDoc = await users.doc(MyApp.userId).get();
+                                      double currentTotalCost = userDoc['totalCost'];
+
+                                      /// increase [totalCost] by the price of the item
+                                      double totalCost = currentTotalCost + price;
+
+                                      // update total cost in the database
+                                      await users.doc(MyApp.userId).update({'totalCost': totalCost});
+
+                                      Navigator.of(context).pop();
+
+                                    } else {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => const LoginPage()),
+                                      );
+                                    }
+                                  },
+                                  child: const Text('Додати в кошик'),
+                                ),
+                              ),
                             ),
                           ],
                         ),

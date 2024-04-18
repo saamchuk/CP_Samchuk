@@ -2,6 +2,14 @@ import 'package:cursova/widgets/orderElements.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+/// the [OrderDetailsPage] page displays the details of an order
+/// 
+/// the [orderId] is an ID of the order
+/// the [date] is a date of the order's confirm 
+/// the [totalCost] is a total cost of the order
+/// the [userId] is an ID of the user who made the order
+/// the [address] is a delivery address of the order
+/// 
 class OrderDetailsPage extends StatelessWidget {
   final String orderId;
   final DateTime date;
@@ -56,7 +64,7 @@ class OrderDetailsPage extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '${totalCost} грн',
+                  '$totalCost грн',
                   style: const TextStyle(
                     fontSize: 20
                   ),
@@ -76,7 +84,7 @@ class OrderDetailsPage extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '${address}',
+                  address,
                   style: const TextStyle(
                     fontSize: 20
                   ),

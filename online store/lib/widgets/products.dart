@@ -3,6 +3,13 @@ import 'package:cursova/services/database_service.dart';
 import 'package:cursova/widgets/productTile.dart';
 import 'package:flutter/material.dart';
 
+/// the [Products] widget displays products based on the provided [path] 
+/// 
+/// the [width] is a width factor used for horizontal padding
+/// the [path] is a path to the collection or current category or subcategory
+/// the [all] variable indicates if it's categories
+/// the [subcategories] variable indicates if it's subcategories
+/// 
 class Products extends StatelessWidget {
   final int width;
   final String path;
@@ -29,9 +36,9 @@ class Products extends StatelessWidget {
           return FutureBuilder<List<DocumentSnapshot>>(
             future: ApiService().allProducts(allPath),
             builder: (context, productSnapshot) {
-              /*if (productSnapshot.connectionState == ConnectionState.waiting) {
+              if (productSnapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
-              }*/
+              }
               if (productSnapshot.hasError) {
                 return Text('Error: ${productSnapshot.error}');
               }
@@ -39,10 +46,10 @@ class Products extends StatelessWidget {
               final products = productSnapshot.data ?? [];
 
               return Padding(
-                padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width / width), // Відступи зліва та справа
+                padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width / width),
                 child: Align (
                   alignment: Alignment.center,
-                  child: Wrap(// відстань між карточками по вертикалі
+                  child: Wrap(
                     alignment: WrapAlignment.center,
                     children: List.generate(
                       products.length,
@@ -51,8 +58,9 @@ class Products extends StatelessWidget {
                         update: false,
                         id: products[index].reference.path,
                         name: products[index].get('name'),
-                        price: products[index].get('price'),
+                        price: products[index].get('price').toDouble(),
                         imageUrl: products[index].get('photo'),
+                        description: products[index].get('description'),
                       ),
                     ).toList(),
                   )
@@ -79,9 +87,9 @@ class Products extends StatelessWidget {
           return FutureBuilder<List<DocumentSnapshot>>(
             future: ApiService().subcategoryProducts(allPath),
             builder: (context, productSnapshot) {
-              /*if (productSnapshot.connectionState == ConnectionState.waiting) {
+              if (productSnapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
-              }*/
+              }
               if (productSnapshot.hasError) {
                 return Text('Error: ${productSnapshot.error}');
               }
@@ -92,7 +100,7 @@ class Products extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width / width), // Відступи зліва та справа
                 child: Align (
                   alignment: Alignment.center,
-                  child: Wrap(// відстань між карточками по вертикалі
+                  child: Wrap(
                     alignment: WrapAlignment.center,
                     children: List.generate(
                       products.length,
@@ -103,6 +111,7 @@ class Products extends StatelessWidget {
                         name: products[index].get('name'),
                         price: products[index].get('price'),
                         imageUrl: products[index].get('photo'),
+                        description: products[index].get('description'),
                       ),
                     ).toList(),
                   )
@@ -140,6 +149,7 @@ class Products extends StatelessWidget {
                   name: allPath[index].get('name'),
                   price: allPath[index].get('price'),
                   imageUrl: allPath[index].get('photo'),
+                  description: allPath[index].get('description'),
                 ),
               ).toList(),
             )
